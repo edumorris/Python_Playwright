@@ -14,6 +14,7 @@ def rahul_shetty_setup(browser_setup):
     page.goto(os.environ["rahul_shetty_url"])
     return page
 
+@pytest.fixture(scope="function")
 def test_login(rahul_shetty_setup):
     page = rahul_shetty_setup
 
@@ -50,5 +51,27 @@ def test_wrong_login(rahul_shetty_setup):
     page.locator("#signInBtn").click()
 
     expect(page.locator(".alert-danger")).to_be_visible()
+
+    time.sleep(5)
+
+def test_add_items_to_cart(rahul_shetty_setup, test_login):
+    page = rahul_shetty_setup
+
+    # Select products
+    productA = page.locator("app-card").filter(has_text=os.environ["productA"])
+    productA.get_by_role("button").click()
+
+    productB = page.locator("app-card").filter(has_text=os.environ["productB"])
+    productB.get_by_role("button").click()
+
+    # Checkout
+    page.get_by_text("Checkout").click()
+
+    # ToDo: add test to validate products
+    products = page.locator("//h4[@class='media-heading']/a")
+
+
+    expect(page.locator(".media-body")).to_have_count(2)
+
 
     time.sleep(5)
