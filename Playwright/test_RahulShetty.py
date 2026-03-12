@@ -15,7 +15,7 @@ def rahul_shetty_setup(browser_setup):
     return page
 
 @pytest.fixture(scope="function")
-def test_login(rahul_shetty_setup):
+def page_login(rahul_shetty_setup):
     page = rahul_shetty_setup
 
     # Enter username
@@ -31,10 +31,12 @@ def test_login(rahul_shetty_setup):
     # Sign in
     page.locator("#signInBtn").click()
 
+
+def test_login(rahul_shetty_setup, page_login):
+    page = rahul_shetty_setup
+
     expect(page.locator("//h1[@class='my-4']")).to_be_visible()
     assert page.locator("//h1[@class='my-4']").inner_text() == "Shop Name"
-
-    time.sleep(5)
 
 def test_wrong_login(rahul_shetty_setup):
     page = rahul_shetty_setup
@@ -52,9 +54,7 @@ def test_wrong_login(rahul_shetty_setup):
 
     expect(page.locator(".alert-danger")).to_be_visible()
 
-    time.sleep(5)
-
-def test_add_items_to_cart(rahul_shetty_setup, test_login):
+def test_add_items_to_cart(rahul_shetty_setup, page_login):
     page = rahul_shetty_setup
 
     # Select products
@@ -73,5 +73,14 @@ def test_add_items_to_cart(rahul_shetty_setup, test_login):
 
     expect(page.locator(".media-body")).to_have_count(2)
 
+def test_new_tab(rahul_shetty_setup):
+    page = rahul_shetty_setup
+
+    # Handling a page opened in another tab
+    with page.expect_popup() as new_page:
+        page.locator("//a[@class='blinkingText' and @href='https://rahulshettyacademy.com/documents-request' ]").click()
+        child_page = new_page.value
+        expect(child_page.locator("//section[@class='page-title']//h1")).to_have_text("Documents request")
+        # function .text_content() to get text
 
     time.sleep(5)
