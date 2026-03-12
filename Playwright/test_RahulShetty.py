@@ -1,3 +1,4 @@
+import re
 import time
 import os
 import pytest
@@ -82,5 +83,14 @@ def test_new_tab(rahul_shetty_setup):
         child_page = new_page.value
         expect(child_page.locator("//section[@class='page-title']//h1")).to_have_text("Documents request")
         # function .text_content() to get text
+
+        text = child_page.locator(".red").text_content()
+
+
+        email = re.findall("([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", text)
+
+        print(email)
+
+        assert email.__contains__("mentor@rahulshettyacademy.com")
 
     time.sleep(5)
